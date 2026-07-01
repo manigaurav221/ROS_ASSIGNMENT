@@ -60,6 +60,33 @@ start.bat
 > The **first run takes several minutes** because Docker downloads the ROS 2
 > image and installs dependencies. Later runs are much faster.
 
+## GitHub Codespaces
+
+Prefer to run everything in the cloud? This repo ships a ready-to-use
+[GitHub Codespaces](https://github.com/features/codespaces) setup. **No Docker
+Desktop, no WSL, and no local ROS installation required.**
+
+1. On GitHub, click **Code → Codespaces → Create codespace on main**.
+2. **Wait for setup to finish.** On first launch the container builds, ROS 2
+   `ros2_ws` is compiled with colcon, and `web_gui` npm dependencies are
+   installed automatically (via `.devcontainer/post-create.sh`).
+3. Open the **Command Palette → Tasks: Run Task** and choose **Run ROS**.
+   This builds the workspace, starts rosbridge (port 9090), and runs the
+   `button_listener` node.
+4. Run the **Run React** task (or just run **Run ROS + React** to do both at
+   once). This starts the Vite dev server on port 5173 and, because it detects
+   Codespaces, automatically points the GUI at the forwarded rosbridge URL.
+5. Open the **forwarded port 5173** (the **Ports** tab, or the "Open in
+   Browser" toast) to use the GUI. Click **Send Message to ROS** and watch the
+   node logs in the **Run ROS** terminal.
+
+> **Tip:** If the GUI shows "Disconnected", make sure the forwarded **9090**
+> port visibility is set to **Public** in the **Ports** tab so the browser can
+> reach rosbridge over `wss://`.
+
+The local Docker workflow above is unchanged — Codespaces support is purely
+additive (`.devcontainer/`, `.vscode/tasks.json`, and `scripts/`).
+
 ## Expected output
 
 - In the **browser**, the status badge shows **"Connected to ROS 2"** and the

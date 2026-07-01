@@ -9,7 +9,9 @@ web_gui/dist/
 
 # OS / editor
 .DS_Store
-.vscode/
+.vscode/*
+# ...but keep the shared Codespaces/VS Code tasks under version control.
+!.vscode/tasks.json
 
 # Python
 __pycache__/

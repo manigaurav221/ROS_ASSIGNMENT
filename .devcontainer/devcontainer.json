@@ -1,0 +1,64 @@
+{
+  // GitHub Codespaces / Dev Containers configuration.
+  //
+  // This ADDS Codespaces support without touching the local Docker workflow.
+  // It reuses the existing docker-compose.yml and layers a small override
+  // (docker-compose.devcontainer.yml) on top so that:
+  //   * the whole repo is mounted at /workspace (the base compose only mounts
+  //     ros2_ws), and
+  //   * the ros2 container stays alive with `sleep infinity` instead of running
+  //     the button_listener in the foreground (we start things via tasks).
+  //
+  // `docker compose up` locally still reads ONLY docker-compose.yml, so the
+  // existing macOS / Linux / Windows Docker workflow is completely unchanged.
+  "name": "ROS 2 + React (Codespaces)",
+
+  "dockerComposeFile": [
+    "../docker-compose.yml",
+    "docker-compose.devcontainer.yml"
+  ],
+
+  // Use the ROS 2 service as the primary development container.
+  "service": "ros2",
+
+  // The whole repository is mounted here by the override compose file.
+  "workspaceFolder": "/workspace",
+
+  // Node is NOT in the ROS image (the local "web" container uses node:20-alpine
+  // separately). Add it here via a Feature so the Dockerfile stays untouched.
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    }
+  },
+
+  // Ports the browser needs:
+  //   5173 -> Vite dev server (the React GUI)
+  //   9090 -> rosbridge WebSocket (roslibjs connects here)
+  "forwardPorts": [5173, 9090],
+  "portsAttributes": {
+    "5173": {
+      "label": "React (Vite) GUI",
+      "onAutoForward": "openBrowser"
+    },
+    "9090": {
+      "label": "rosbridge WebSocket",
+      "onAutoForward": "silent"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-iot.vscode-ros",
+        "ms-vscode.cpptools",
+        "GitHub.copilot"
+      ]
+    }
+  },
+
+  // On first create: source ROS, build ros2_ws with colcon, and install the
+  // web_gui npm dependencies. Delegated to a script so it is easy to rerun.
+  "postCreateCommand": "bash .devcontainer/post-create.sh"
+}

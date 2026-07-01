@@ -1,0 +1,25 @@
+# Dev Container override for GitHub Codespaces.
+#
+# This file is ONLY used by the Dev Container / Codespaces tooling
+# (see .devcontainer/devcontainer.json). A plain `docker compose up` does not
+# read it, so the local Docker workflow is completely unchanged.
+#
+# It patches the existing `ros2` service so it can act as a full development
+# container:
+#   * mounts the WHOLE repository at /workspace (the base compose only mounts
+#     ros2_ws), giving us web_gui, scripts, etc.
+#   * replaces the "build + run listener in foreground" command with
+#     `sleep infinity` so the container stays alive and we can start ROS and the
+#     web server on demand from VS Code tasks.
+
+services:
+  ros2:
+    # Keep the container running without launching the listener; we start ROS
+    # and React manually via the VS Code tasks / scripts.
+    command: sleep infinity
+    working_dir: /workspace
+    volumes:
+      # Mount the entire repo (relative paths resolve from the repo root, where
+      # the first compose file lives). This is additive to the base ros2_ws
+      # mount already defined in docker-compose.yml.
+      - .:/workspace

@@ -1,0 +1,38 @@
+{
+  // VS Code tasks for the Codespaces / Dev Container workflow.
+  //   * "Run ROS"          -> build the workspace, start rosbridge + listener
+  //   * "Run React"        -> start the Vite dev server (auto-configures the
+  //                            rosbridge URL when inside Codespaces)
+  //   * "Run ROS + React"  -> run both of the above together
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run ROS",
+      "type": "shell",
+      "command": "bash ${workspaceFolder}/scripts/run_ros.sh",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "ros-react",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Run React",
+      "type": "shell",
+      "command": "bash ${workspaceFolder}/scripts/run_web.sh",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "ros-react",
+        "panel": "dedicated",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Run ROS + React",
+      "dependsOn": ["Run ROS", "Run React"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}
