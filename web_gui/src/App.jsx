@@ -17,9 +17,21 @@ import { useEffect, useRef, useState } from 'react';
 import ROSLIB from 'roslib';
 
 // The rosbridge URL comes from a Vite environment variable (set in
-// docker-compose.yml). If it is missing, we fall back to localhost.
+// docker-compose.yml for the local flow). If it is missing (e.g. in GitHub
+// Codespaces), we connect to "/rosbridge" on THIS same origin. The Vite dev
+// server proxies that WebSocket to rosbridge (see web_gui/vite.config.js), so
+// the browser only ever talks to the already-authenticated 5173 origin and we
+// never have to expose port 9090 publicly.
+function defaultRosbridgeUrl() {
+  if (typeof window !== 'undefined' && window.location) {
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${wsProtocol}//${window.location.host}/rosbridge`;
+  }
+  return 'ws://localhost:9090';
+}
+
 const ROSBRIDGE_URL =
-  import.meta.env.VITE_ROSBRIDGE_URL || 'ws://localhost:9090';
+  import.meta.env.VITE_ROSBRIDGE_URL || defaultRosbridgeUrl();
 
 export default function App() {
   // Connection status shown to the user: 'connected' | 'disconnected' | 'error'

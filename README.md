@@ -80,9 +80,10 @@ Desktop, no WSL, and no local ROS installation required.**
    Browser" toast) to use the GUI. Click **Send Message to ROS** and watch the
    node logs in the **Run ROS** terminal.
 
-> **Tip:** If the GUI shows "Disconnected", make sure the forwarded **9090**
-> port visibility is set to **Public** in the **Ports** tab so the browser can
-> reach rosbridge over `wss://`.
+> **Tip:** If the GUI shows "Disconnected", make sure the **Run ROS** task is
+> actually running (it starts rosbridge on port 9090) and that the **Run React**
+> task is running too. The GUI reaches rosbridge through a `/rosbridge` proxy on
+> the same 5173 origin, so you do **not** need to change any port visibility.
 
 The local Docker workflow above is unchanged — Codespaces support is purely
 additive (`.devcontainer/`, `.vscode/tasks.json`, and `scripts/`).

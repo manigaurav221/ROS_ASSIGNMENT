@@ -3,8 +3,11 @@
 # run_web.sh - start the React + Vite dev server.
 #
 # When running inside GitHub Codespaces the browser is on the student's own
-# machine, so "ws://localhost:9090" cannot reach rosbridge. Codespaces exposes
-# port 9090 at a public HTTPS URL instead, so we point the app there.
+# machine and can only reach forwarded ports over an authenticated HTTPS
+# origin. Rather than exposing rosbridge on a second public port, we let the
+# GUI open its WebSocket to THIS same origin at "/rosbridge"; the Vite dev
+# server proxies that to rosbridge (see web_gui/vite.config.js). This means
+# only port 5173 needs to be forwarded and nothing has to be made "Public".
 
 set -e
 
@@ -13,14 +16,13 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "${REPO_ROOT}/web_gui"
 
-# Detect Codespaces. GitHub sets CODESPACES=true and provides the codespace
-# name + the port-forwarding domain used to build forwarded URLs.
-if [ "${CODESPACES}" = "true" ] && [ -n "${CODESPACE_NAME}" ]; then
-  # The forwarded 9090 port is served over TLS, so roslibjs must use wss://
-  # (the secure WebSocket scheme) against the same host that Codespaces would
-  # serve at https://${CODESPACE_NAME}-9090.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}
-  export VITE_ROSBRIDGE_URL="wss://${CODESPACE_NAME}-9090.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-  echo "==> Codespaces detected. VITE_ROSBRIDGE_URL=${VITE_ROSBRIDGE_URL}"
+# Detect Codespaces. GitHub sets CODESPACES=true.
+if [ "${CODESPACES}" = "true" ]; then
+  # Clear any inherited value so App.jsx falls back to the same-origin
+  # "/rosbridge" WebSocket, which Vite proxies to ws://localhost:9090 inside
+  # this container. No public port, no manual visibility change required.
+  unset VITE_ROSBRIDGE_URL
+  echo "==> Codespaces detected. GUI will reach rosbridge via the /rosbridge proxy on port 5173."
 else
   echo "==> Not in Codespaces. Using default rosbridge URL (ws://localhost:9090)."
 fi
