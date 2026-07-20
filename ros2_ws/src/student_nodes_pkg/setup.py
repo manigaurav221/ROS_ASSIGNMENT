@@ -31,6 +31,7 @@ setup(
 
             # ADD YOUR OWN NODES BELOW, one per line. For example:
             #   'my_node = student_nodes_pkg.my_node:main',
+            'temperature_publisher = student_nodes_pkg.temperature_publisher:main',
         ],
     },
 )
