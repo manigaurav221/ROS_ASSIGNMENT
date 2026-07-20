@@ -26,9 +26,11 @@ const ROSBRIDGE_URL =
 export default function App() {
   const [status, setStatus] = useState('disconnected');
   const [clickCount, setClickCount] = useState(0);
+  const [temperature, setTemperature] = useState('--');
 
   const rosRef = useRef(null);
   const topicRef = useRef(null);
+  const temperatureTopicRef = useRef(null);
 
   useEffect(() => {
     const ros = new ROSLIB.Ros({
@@ -45,6 +47,15 @@ export default function App() {
       ros,
       name: '/button_press',
       messageType: 'std_msgs/String',
+    });
+    temperatureTopicRef.current = new ROSLIB.Topic({
+      ros,
+      name: '/sensor/temperature',
+      messageType: 'std_msgs/Float32',
+    });
+
+    temperatureTopicRef.current.subscribe((message) => {
+      setTemperature(message.data.toFixed(2));
     });
 
     return () => {
@@ -230,6 +241,16 @@ export default function App() {
 
         <div style={styles.count}>
           Messages sent: {clickCount}
+        </div>
+        <div
+          style={{
+          marginTop: "10px",
+          fontSize: "1.1rem",
+          fontWeight: "bold",
+          color: "#1971c2",
+          }}
+        >
+          Temperature: {temperature} °C
         </div>
 
         <div style={styles.hint}>

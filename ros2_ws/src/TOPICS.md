@@ -24,6 +24,8 @@ React GUI  <--roslibjs/WebSocket-->  rosbridge_server (:9090)  <-->  ROS 2 topic
 |-------|--------------|--------------|---------------|-------|
 | `/button_press` | `std_msgs/String` | React GUI (`web_gui/src/App.jsx`) | `button_listener` (`button_listener_pkg`) | Sent on every button click. |
 | `/robot_status` | `std_msgs/String` | `example_publisher` (`student_nodes_pkg`) | React GUI (optional) | Demo: a node publishing up to the GUI once per second. |
+| `/sensor/temperature` | `std_msgs/Float32` | `temperature_publisher` (`student_nodes_pkg`) | React GUI | Publishes simulated temperature values for live display in the dashboard. |
+
 
 ## Adding a new topic — checklist
 
@@ -36,3 +38,4 @@ React GUI  <--roslibjs/WebSocket-->  rosbridge_server (:9090)  <-->  ROS 2 topic
 4. **Mirror the string** in the React GUI (`web_gui/src/App.jsx`) — JavaScript
    cannot import the Python file, so the name must be copied there too.
 5. **Rebuild**: run `colcon build` inside `ros2_ws/`.
+
